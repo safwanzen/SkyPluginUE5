@@ -4,7 +4,7 @@
 #include "SkyPlugin.h"
 #include "TimePlugin.h"
 
-
+DEFINE_LOG_CATEGORY(LogSkyManager);
 
 ASkyManager::ASkyManager(const class FObjectInitializer& PCIP) : Super(PCIP)
 {
@@ -108,24 +108,24 @@ void ASkyManager::InitSunMoonCalculator(int year, int month, int day, int h, int
 	///fixed below comment! now UTC corrected. leaving here for now
 	///////////this is NOT UTC CORRECTED!!! RIGHT NOW WE ARE MANUALLY CONVERTING FROM LOCAL TO UTC TIME!!!!////////
 
-	//bool julian = false;
-	//if (year < 1582 || (year == 1582 && month <= 10) || (year == 1582 && month == 10 && day < 15)) julian = true;
-	//int D = day;
-	//int M = month;
-	//int Y = year;
-	//if (M < 3)
-	//{
-	//	Y--;
-	//	M += 12;
-	//}
-	//int A = Y / 100;
-	//int B = julian ? 0 : 2 - A + A / 4;
-	//double dayFraction = (h + (m + (s / 60.0)) / 60.0) / 24.0;
-	//double jd = dayFraction + (int)(365.25 * (Y + 4716)) + (int)(30.6001 * (M + 1)) + D + B - 1524.5;
-	//if (jd < 2299160.0 && jd >= 2299150.0)
-	//{
-	//	return;
-	//}
+	bool julian = false;
+	if (year < 1582 || (year == 1582 && month <= 10) || (year == 1582 && month == 10 && day < 15)) julian = true;
+	int D = day;
+	int M = month;
+	int Y = year;
+	if (M < 3)
+	{
+		Y--;
+		M += 12;
+	}
+	int A = Y / 100;
+	int B = julian ? 0 : 2 - A + A / 4;
+	double dayFraction = (h - TimeZone + (m + (s / 60.0)) / 60.0) / 24.0;
+	double _jd = dayFraction + (int)(365.25 * (Y + 4716)) + (int)(30.6001 * (M + 1)) + D + B - 1524.5;
+	/*if (jd < 2299160.0 && jd >= 2299150.0)
+	{
+		return;
+	}*/
 
 
 	this->obsLon = obsLonIn;
@@ -154,8 +154,8 @@ void ASkyManager::InitSunMoonCalculator(int year, int month, int day, int h, int
 	double jdHr = CalcTime.GetTimeOfDay().GetTotalHours();
 	double jdDay = CalcTime.GetJulianDay();
 	double jd = jdDay + jdHr / 24.0;
-
 	TTminusUT = 0;
+	//UE_LOG(LogSkyManager, Display, TEXT("jd -> %d ---- _jd -> %d ----  ---- TTminusUT -> %d"), jd, _jd, TTminusUT);
 	if (CalcTime.GetYear() > -600 && CalcTime.GetYear() < 2200) {
 		double x = CalcTime.GetYear() + (CalcTime.GetMonth() - 1 + CalcTime.GetDay() / 30.0) / 12.0;
 		double x2 = x * x, x3 = x2 * x, x4 = x3 * x;
@@ -170,7 +170,7 @@ void ASkyManager::InitSunMoonCalculator(int year, int month, int day, int h, int
 	}
 
 	//double jd = toJulianDay(year, month, day, h, m, s);
-	setUTDate(jd);
+	setUTDate(_jd);
 }
 
 //double  ASkyManager::toJulianDay(int year, int month, int day, int h, int m, int s) {

@@ -9,6 +9,8 @@
 #include "TimeManager.h"
 #include "SkyManager.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogSkyManager, Display, All);
+
 /** Radians to degrees. */
 const double RAD_TO_DEG = 180.0 / PI;
 
@@ -26,7 +28,7 @@ const double EARTH_RADIUS = 6378.1366;
 const double JULIAN_DAYS_PER_CENTURY = 36525.0;
 
 /** Seconds in one day. */
-const double SECONDS_PER_DAY = 86400.0;
+const double SECONDS_PER_DAY = 86400.0; // 86400.0; << real seconds per day. try halving to solve 2 day cycle in one day
 
 /** Our default epoch. The Julian Day which represents noon on 2000-01-01. */
 const double J2000 = 2451545.0;
