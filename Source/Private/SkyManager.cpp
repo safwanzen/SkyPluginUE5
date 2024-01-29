@@ -682,11 +682,14 @@ TArray<double> ASkyManager::getMoonDiskOrientationAngles()
 float ASkyManager::CalculateMoonPhase()
 {
 	// Last time Lunar year start = solar year start:
-	double elapsed = InternalTime.GetJulianDay() - JD1900; //InternalTime.GetJulianDay() - JD1900
+	if (!TimeManager) return 0.5;
+	double jd = TimeManager->InternalTime.GetJulianDay();
+	double elapsed = jd - JD1900; //InternalTime.GetJulianDay() - JD1900 asdf
 
 	double cycles = elapsed / 29.530588853;
 	int32 count = FPlatformMath::FloorToInt(cycles);
 	cycles -= count;
+	//UE_LOG(LogSkyManager, Display, TEXT("InternalTime.GetJulianDay() = %d ---- count = %d ---- cycles = %d ---- elapsed = %d"), jd, count, cycles, elapsed);
 	return cycles;
 }
 
