@@ -649,7 +649,7 @@ TArray<double> ASkyManager::getMoonDiskOrientationAngles()
 	double x = FMath::Sin(I) * FMath::Sin(omega);
 	double y = FMath::Sin(I) * FMath::Cos(omega) * FMath::Cos(eps) - FMath::Cos(I) * FMath::Sin(eps);
 	double w = FMath::Atan2(x, y);
-	double sinp = FMath::Sqrt(x*x + y * y) * FMath::Cos(moonRA - w) / FMath::Cos(bp);
+	double sinp = FMath::Sqrt(x * x + y * y) * FMath::Cos(moonRA - w) / FMath::Cos(bp);
 	double p = FMath::Asin(sinp);
 
 	// Compute bright limb angle bl
@@ -677,6 +677,17 @@ TArray<double> ASkyManager::getMoonDiskOrientationAngles()
 	}
 	//return TArray<double> {lp, bp, p, bl, par, lst};
 	return TArray<double> {lp, bp, p, bl, par, lst};
+}
+
+float ASkyManager::CalculateMoonPhase()
+{
+	// Last time Lunar year start = solar year start:
+	double elapsed = InternalTime.GetJulianDay() - JD1900; //InternalTime.GetJulianDay() - JD1900
+
+	double cycles = elapsed / 29.530588853;
+	int32 count = FPlatformMath::FloorToInt(cycles);
+	cycles -= count;
+	return cycles;
 }
 
 
